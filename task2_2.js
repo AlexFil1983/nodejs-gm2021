@@ -2,7 +2,7 @@ import express from "express";
 import { dummy_users } from "./user_data/dummy_users.js";
 const app = express();
 import { v4 as uuidv4 } from "uuid";
-import { body, check, validationResult } from "express-validator";
+import { body, validationResult } from "express-validator";
 
 app.use(
   express.urlencoded({
