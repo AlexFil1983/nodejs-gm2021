@@ -19,25 +19,26 @@ export const getUsersBySubstrAndLimitQuery = (req, res) => {
   let usersLimit = req.query.limit ? req.query.limit : null;
 
   if (userSubstring.length > 0) {
-    console.log("substr");
     User.findAll({
       where: {
         login: {
           [Op.iLike]: userSubstring + "%",
         },
       },
+      limit: usersLimit ? usersLimit : null,
     })
       .then((users) => {
         if (users.length === 0) {
-          res.send("Users with this parameters not found");
+          return res.send("Users with this parameters not found");
         }
-        return res.send(usersLimit ? users.slice(0, usersLimit) : users);
+        return res.send(users);
       })
       .catch((err) => console.log(err));
+  } else {
+    User.findAll({ limit: usersLimit ? usersLimit : null }).then((users) =>
+      res.send(users).catch((err) => console.log(err))
+    );
   }
-  User.findAll()
-    .then((users) => res.send(usersLimit ? users.slice(0, usersLimit) : users))
-    .catch((err) => console.log(err));
 };
 
 export const editUserById = (req, res) => {
