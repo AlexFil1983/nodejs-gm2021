@@ -1,23 +1,17 @@
 import fs from "fs";
 import readline from "readline";
 import csv from "csvtojson";
-import { pipeline } from "stream";
 
-let booksCsv = "";
-
+const csvFilePath = "./csv/table.csv";
 const rl = readline.createInterface({
-  input: fs.createReadStream("./csv/table.csv"),
+  input: fs.createReadStream(csvFilePath),
   output: fs.createWriteStream("./result.json"),
   terminal: false,
 });
 
-rl.on("line", function (line) {
-  booksCsv += line + "\n";
-});
-
 rl.on("close", function (line) {
   csv()
-    .fromString(booksCsv)
+    .fromFile(csvFilePath)
     .preFileLine((fileLine, lineIdx) => {
       if (lineIdx === 0) {
         fileLine = fileLine
