@@ -50,7 +50,6 @@ app.patch("/user/edit/:userId", (req, res) => {
     return res.send("Can't edit. User not found. Try another id");
   }
   const editedUser = { ...dummy_users[editUserIdx], password, age };
-  console.log("edited User", editedUser);
   dummy_users[editUserIdx] = editedUser;
   console.log("User edited");
   res.send(dummy_users[editUserIdx]);
