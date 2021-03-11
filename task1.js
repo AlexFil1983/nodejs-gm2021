@@ -9,7 +9,7 @@ const rl = readline.createInterface({
 const userInput = () => {
   rl.question("", (input) => {
     const reversedData = input.split("").reverse().join("");
-    process.stdout.write(`${reversedData}\n`);
+    rl.output.write(`${reversedData}\n`);
     userInput();
   });
 };
