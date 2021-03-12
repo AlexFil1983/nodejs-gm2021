@@ -5,7 +5,7 @@ import {
   getUserById,
   getUsersBySubstrAndLimitQuery,
   newUser,
-} from "../controllers/index.js";
+} from "../controllers/user.js";
 import {
   ageValidation,
   loginValidation,
@@ -13,29 +13,25 @@ import {
 } from "../services/validation.js";
 const userRoutes = express.Router();
 
-userRoutes.get("/user/:userId", getUserById);
-
-userRoutes.get("/users", getUsersBySubstrAndLimitQuery);
-
-userRoutes.patch(
-  "/user/edit/:userId",
-  ageValidation,
-  passwordValidaton,
-  editUserById
-);
-
-userRoutes.delete("/user/delete/:userId", deleteUserById);
+userRoutes.get("/all", getUsersBySubstrAndLimitQuery);
 
 userRoutes.post(
-  "/user/new",
+  "/new",
   ageValidation,
   loginValidation,
   passwordValidaton,
   newUser
 );
 
-userRoutes.get("/", (req, res) => {
-  res.send("Hello");
-});
+userRoutes.get("/:userId", getUserById);
+
+userRoutes.patch(
+  "/edit/:userId",
+  ageValidation,
+  passwordValidaton,
+  editUserById
+);
+
+userRoutes.delete("/delete/:userId", deleteUserById);
 
 export { userRoutes };
