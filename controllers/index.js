@@ -15,17 +15,18 @@ export const getUserById = async (req, res) => {
 };
 
 export const getUsersBySubstrAndLimitQuery = (req, res) => {
-  let userSubstring = req.query.login ? req.query.login : "";
-  let usersLimit = req.query.limit ? req.query.limit : null;
+  const userSubstring = req.query.login ? req.query.login : "";
+  const limit = req.query.limit ? req.query.limit : null;
 
   if (userSubstring.length > 0) {
+    console.log("yes");
     User.findAll({
       where: {
         login: {
           [Op.iLike]: userSubstring + "%",
         },
       },
-      limit: usersLimit ? usersLimit : null,
+      limit,
     })
       .then((users) => {
         if (users.length === 0) {
@@ -34,11 +35,12 @@ export const getUsersBySubstrAndLimitQuery = (req, res) => {
         return res.send(users);
       })
       .catch((err) => console.log(err));
-  } else {
-    User.findAll({ limit: usersLimit ? usersLimit : null }).then((users) =>
-      res.send(users).catch((err) => console.log(err))
-    );
   }
+  User.findAll({ limit })
+    .then((users) => {
+      return res.send(users);
+    })
+    .catch((err) => console.log(err));
 };
 
 export const editUserById = (req, res) => {
