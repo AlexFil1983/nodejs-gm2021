@@ -29,3 +29,26 @@ export const passwordValidaton = body("password")
   .withMessage(
     "Please make password with min 5 characters that contains numbers and letters (at least one lowercase and one uppercase)"
   );
+
+export const isPermissionsValid = (permissionArray) => {
+  const validPermissions = ["READ", "WRITE", "DELETE", "SHARE", "UPLOAD_FILES"];
+  const invalidPermissions = permissionArray.filter(
+    (permission) => !validPermissions.includes(permission)
+  );
+  if (invalidPermissions.length > 0) {
+    return false;
+  }
+  return true;
+};
+
+export const isPermissionEmpty = body("permissions")
+  .not()
+  .isEmpty()
+  .trim()
+  .withMessage("Permissions is empty");
+
+export const isGroupNameEmpty = body("name")
+  .not()
+  .isEmpty()
+  .trim()
+  .withMessage("Group name is empty");

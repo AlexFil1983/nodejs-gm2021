@@ -3,7 +3,6 @@ const app = express();
 import { sequelize } from "./data-access/sequelize_dbconnect.js";
 import { groupRoutes } from "./routes/groups.js";
 import { userRoutes } from "./routes/users.js";
-// import { groupRoutes } from "./routes/groups.js";
 
 app.use(
   express.urlencoded({
