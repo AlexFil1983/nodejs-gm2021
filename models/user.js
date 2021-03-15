@@ -1,8 +1,20 @@
 import pkg from "sequelize";
 const { Sequelize, Model } = pkg;
 import { sequelize } from "../data-access/sequelize_dbconnect.js";
+import { Group } from "../models/group.js";
 
-export class User extends Model {}
+export class User extends Model {
+  addUsersToGroup = async (groupId, userIds) => {
+    const group = await Group.findByPk(groupId);
+    const users = await User.findAll({
+      where: {
+        id: [...userIds],
+      },
+    });
+    users.map((user) => user.addGroup(group));
+  };
+}
+
 User.init(
   {
     id: {

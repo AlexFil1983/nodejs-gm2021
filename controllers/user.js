@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import { User } from "../models/user.js";
 import pkg from "sequelize";
 import { Group } from "../models/group.js";
+import { addUsersToGroup } from "../services/addUsersToGroup.js";
 const { Op } = pkg;
 
 export const getUserById = async (req, res) => {
@@ -66,6 +67,7 @@ export const editUserById = (req, res) => {
 
 export const deleteUserById = (req, res) => {
   const userId = req.params.userId;
+
   User.findByPk(userId)
     .then((user) => {
       if (!user) {
@@ -73,6 +75,7 @@ export const deleteUserById = (req, res) => {
       }
       user.isDeleted = true;
       user.save();
+      user.getGroups().then((groups) => user.removeGroups(groups));
       res.send(user);
     })
     .catch((err) => console.log(err));
@@ -86,15 +89,18 @@ export const newUser = async (req, res) => {
   const { login, password, age, groupId } = req.body;
   const group = await Group.findByPk(groupId);
 
+  const id = uuidv4();
+
   await User.create({
     login,
     password,
     age,
-    id: uuidv4(),
+    id,
     isDeleted: false,
   })
     .then((user) => {
-      user.addGroup(group);
+      addUsersToGroup(groupId, [id]);
+      // user.addGroup(group);
       res.send("User created!");
     })
     .catch((err) => console.log(err));
