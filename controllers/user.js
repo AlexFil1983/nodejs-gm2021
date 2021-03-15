@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { validationResult } from "express-validator";
 import { User } from "../models/user.js";
 import pkg from "sequelize";
+import { Group } from "../models/group.js";
 const { Op } = pkg;
 
 export const getUserById = async (req, res) => {
@@ -77,20 +78,23 @@ export const deleteUserById = (req, res) => {
     .catch((err) => console.log(err));
 };
 
-export const newUser = (req, res) => {
+export const newUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { login, password, age } = req.body;
-  User.create({
+  const { login, password, age, groupId } = req.body;
+  const group = await Group.findByPk(groupId);
+
+  await User.create({
     login,
     password,
     age,
     id: uuidv4(),
     isDeleted: false,
   })
-    .then((result) => {
+    .then((user) => {
+      user.addGroup(group);
       res.send("User created!");
     })
     .catch((err) => console.log(err));
