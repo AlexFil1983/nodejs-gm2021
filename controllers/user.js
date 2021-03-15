@@ -45,18 +45,28 @@ export const getUsersBySubstrAndLimitQuery = (req, res) => {
     .catch((err) => console.log(err));
 };
 
-export const editUserById = (req, res) => {
+export const editUserById = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
   const userId = req.params.userId;
-  const { password, age } = req.body;
+  const { password, age, groupId } = req.body;
   User.findByPk(userId)
-    .then((user) => {
+    .then(async (user) => {
       if (!user) {
         return res.status(404).send("User not found");
       }
+
+      if (groupId) {
+        const group = await Group.findByPk(groupId);
+        if (!group) {
+          return res.send("Wrong group id");
+        }
+        user.getGroups().then((groups) => user.removeGroups(groups));
+        user.addUsersToGroup(groupId, [userId]);
+      }
+
       user.password = password;
       user.age = age;
       user.save();
@@ -89,6 +99,10 @@ export const newUser = async (req, res) => {
   const { login, password, age, groupId } = req.body;
   const group = await Group.findByPk(groupId);
 
+  if (!group) {
+    return res.send("Wrong group id");
+  }
+
   const id = uuidv4();
 
   await User.create({
@@ -100,7 +114,6 @@ export const newUser = async (req, res) => {
   })
     .then((user) => {
       addUsersToGroup(groupId, [id]);
-      // user.addGroup(group);
       res.send("User created!");
     })
     .catch((err) => console.log(err));
